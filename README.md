@@ -1,8 +1,7 @@
 # LinkedDropdowns
 React unlimited linked dropdowns
 
-<code>
-<pre>
+```
 import LinkedDropdowns from './LinkedDropdowns';
 
 <LinkedDropdowns
@@ -36,12 +35,13 @@ import LinkedDropdowns from './LinkedDropdowns';
       ]
     }
   ]}
+  breakpoints={{xs: 4, md: 4, lg: 2}}
+  disableWarnings={true}
+  helperText='Select previous option first'
+  required={true}
   size='small'
   variant='outlined'
-  breakpoints={{ xs: 4, md: 4, lg: 2  }}
-  required={true}
-  helperText='Select previous option first'
-  // value='3'
+  value='2' // selected combination should be: Romania / Tulcea / Cataloi
+  onChange={(e) => console.log(`LinkedDropdowns.onChange: value = '${e}'`)}
 />
-</pre>
-</code>
+```
