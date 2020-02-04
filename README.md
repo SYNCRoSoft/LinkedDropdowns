@@ -39,5 +39,5 @@ import LinkedDropdowns from './LinkedDropdowns';
   breakpoints={{ xs: 4, md: 4, lg: 2  }}
   required={true}
   helperText='Select previous option first'
-  // value='3' // selected combination should be: Romania / Tulcea / Tulcea which is also the default option
+  // value='3'
 />
