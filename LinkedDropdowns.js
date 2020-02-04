@@ -43,14 +43,20 @@ console.log = function() {
 }
 
 export default function LinkedDropdowns(props) {
-  const {dropdowns, size, variant, breakpoints, required, helperText, value: defaultValue} = props;
+  const {
+    dropdowns,
+    size = 'medium',
+    variant = 'standard',
+    breakpoints = {xs: 4, md: 4, lg: 2},
+    required = false,
+    helperText = '',
+    disableWarnings = false,
+    value: defaultValue = ''} = props;
   const {xs, sm, md, lg, xl} = {...{xs: false, sm: false, md: false, lg: false, xl: false}, ...breakpoints};
   const [items, setItems] = useState(Array(dropdowns.length).fill([]));
   const [values, setValues] = useState(Array(dropdowns.length).fill(''));
   const [value, setValue] = useState(props.value ? props.value : '');
   const prevValues = usePrevious({values});
-  // values[values.length - 1] will be the component value
-  // but i don't know yet how to pass it back to its parent
 
   function usePrevious(value) {
     const ref = useRef();
@@ -60,13 +66,27 @@ export default function LinkedDropdowns(props) {
     return ref.current;
   }
 
-  // at the beginning, fill only the first dropdown with its items
+  // populate dropdowns based on passed value prop to the component... hard work!
   useEffect(() => {
+    var tempValues = values;
+    if (typeof props.value !== 'undefined' && props.value !== '') {
+      if (!disableWarnings)
+        console.log('component was instantiated with value:', defaultValue, ', trying to populate dropdowns...');
+      tempValues = ['10', '2', '2'];
+    }
+    setValues(tempValues);
+  }, [defaultValue]);
+
+  // at the beginning, populate only the first dropdown with all of its items
+  useEffect(() => {
+    if (!disableWarnings)
+      console.log('component was instantiated with data:', dropdowns);
     let tempItems = [...items];
     tempItems[0] = dropdowns[0].items;
     setItems(tempItems);
   }, []);
 
+  // the real linking dark magic happens here
   useEffect(() => {
     if ((values[0] === '') || (JSON.stringify(prevValues.values) === JSON.stringify(values)))
       return;
@@ -82,12 +102,12 @@ export default function LinkedDropdowns(props) {
         }
         tempItems[i + 1] = dropdowns[i + 1].items.filter(item => item.idParent === values[i]);
         let defaultItems = tempItems[i + 1].filter(item => item.isDefault);
-        if (defaultItems.length === 0)
-          console.log('There is no default item in this set:', tempItems[i + 1]);
+        if (defaultItems.length === 0 && !disableWarnings)
+            console.log('There is no default item in this set:', tempItems[i + 1]);
         if (defaultItems.length === 1)
           tempValues[i + 1] = defaultItems ? defaultItems[0].id : ''
-        if (defaultItems.length > 1)
-          console.log('Found more than one default item in this set:', tempItems[i + 1], 'and the matches are:', defaultItems);
+        if (defaultItems.length > 1 && !disableWarnings)
+            console.log('Found more than one default item in this set:', tempItems[i + 1], 'and the matches are:', defaultItems);
         break;
       }
     }
@@ -97,23 +117,16 @@ export default function LinkedDropdowns(props) {
     setValue(tempValues[tempValues.length - 1]);
   }, [values]);
 
-  useEffect(() => {
-    var tempValues = values;
-    if (typeof props.value !== 'undefined' && props.value !== '') {
-      console.log('useEffect(defaultValue) triggered with value:', defaultValue);
-      tempValues = ['10', '2', '2'];
-    }
-    setValues(tempValues);
-  }, [defaultValue]);
-
+  // invoking the component onChange(e) prop
   useEffect(() => {
     if (typeof props.onChange === 'function') {
-      console.log('calling props.onChange with the new value =', {value});
       props.onChange(value);
     } else
-      console.log('trying to call props.onChange with the new value =', {value}, 'but onChange prop is undefined or it is not a function');
+      if (!disableWarnings)
+        console.log('trying to call props.onChange with the new value =', {value}, 'but onChange prop is undefined or it is not a function');
   }, [value]);
 
+  // handling the dropdowns onChange events
   const handleChange = (e) => {
     let tempValues = [...values];
     tempValues[+e.target.name] = e.target.value;
