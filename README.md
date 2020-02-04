@@ -35,7 +35,7 @@ import LinkedDropdowns from './LinkedDropdowns';
       ]
     }
   ]}
-  breakpoints={{xs: 4, md: 4, lg: 2}}
+  breakpoints={{xs: 6, sm: 4, lg: 2}}
   disableWarnings={false}
   helperText='Select previous option first'
   required={true}
