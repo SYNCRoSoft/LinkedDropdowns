@@ -1,8 +1,7 @@
 # LinkedDropdowns
 React unlimited linked dropdowns
 
-<code>
-  <pre>
+<pre>
 import LinkedDropdowns from './LinkedDropdowns';
 
 <LinkedDropdowns
@@ -43,5 +42,4 @@ import LinkedDropdowns from './LinkedDropdowns';
   helperText='Select previous option first'
   // value='3'
 />
-  </pre>
-</code>
+</pre>
