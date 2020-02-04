@@ -35,19 +35,19 @@ import TextField from '@material-ui/core/TextField';
 import MenuItem from '@material-ui/core/MenuItem';
 import Divider from '@material-ui/core/Divider';
 
-var log = console.log;
+let log = console.log;
 console.log = function() {
-  var args = Array.from(arguments);
+  let args = Array.from(arguments);
   args.unshift('%cLinkedDropdowns says:', 'color: red;');
   log.apply(console, args);
 }
 
 export default function LinkedDropdowns(props) {
-  const {dropdowns, size, variant, breakpoints, required, helperText, onChange} = props;
+  const {dropdowns, size, variant, breakpoints, required, helperText, value: defaultValue} = props;
   const {xs, sm, md, lg, xl} = {...{xs: false, sm: false, md: false, lg: false, xl: false}, ...breakpoints};
   const [items, setItems] = useState(Array(dropdowns.length).fill([]));
   const [values, setValues] = useState(Array(dropdowns.length).fill(''));
-  const [value, setValue] = useState('');
+  const [value, setValue] = useState(props.value ? props.value : '');
   const prevValues = usePrevious({values});
   // values[values.length - 1] will be the component value
   // but i don't know yet how to pass it back to its parent
@@ -60,7 +60,7 @@ export default function LinkedDropdowns(props) {
     return ref.current;
   }
 
-  // at beginning, fill first dropdown items
+  // at the beginning, fill only the first dropdown with its items
   useEffect(() => {
     let tempItems = [...items];
     tempItems[0] = dropdowns[0].items;
@@ -98,15 +98,20 @@ export default function LinkedDropdowns(props) {
   }, [values]);
 
   useEffect(() => {
-    console.log('Current value is:', {value: values[values.length - 1]});
-  }, [value]);
+    var tempValues = values;
+    if (typeof props.value !== 'undefined' && props.value !== '') {
+      console.log('useEffect(defaultValue) triggered with value:', defaultValue);
+      tempValues = ['10', '2', '2'];
+    }
+    setValues(tempValues);
+  }, [defaultValue]);
 
   useEffect(() => {
-    console.log('calling props.onChange with a new value =', {value});
-    if (typeof props.onChange === 'function')
+    if (typeof props.onChange === 'function') {
+      console.log('calling props.onChange with the new value =', {value});
       props.onChange(value);
-    else
-      console.log('onChange prop is undefined or it is not a function');
+    } else
+      console.log('trying to call props.onChange with the new value =', {value}, 'but onChange prop is undefined or it is not a function');
   }, [value]);
 
   const handleChange = (e) => {
